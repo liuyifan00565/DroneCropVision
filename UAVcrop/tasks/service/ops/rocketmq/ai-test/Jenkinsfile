@@ -1,0 +1,40 @@
+pipeline {
+  agent {
+    node {
+      label 'maven'
+    }
+  }
+    environment {
+        KS_SPACE = 'ai-test'
+        DOCKER_CREDENTIAL_ID = 'harbor-id'
+        GITHUB_CREDENTIAL_ID = 'github-id'
+        KUBECONFIG_CREDENTIAL_ID = 'kubeconfig'
+        REGISTRY = 'harbor.host.com'
+        DOCKERHUB_NAMESPACE = 'bdh'
+        GITHUB_ACCOUNT = 'chenliwei'
+        APP_NAME = 'bdh-ai-seedlingmq'
+        ALIAS_NAME = '幼苗识别mq服务'
+    }
+
+    stages {
+
+        stage ('build & push') {
+            steps {
+                container ('maven') {
+                    sh 'docker build -f tasks/service/rocketmq/Dockerfile -t $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:$KS_SPACE-$BUILD_NUMBER .'
+                    withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKER_CREDENTIAL_ID" ,)]) {
+                        sh 'echo "$DOCKER_PASSWORD" | docker login $REGISTRY -u "$DOCKER_USERNAME" --password-stdin'
+                        sh 'docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:$KS_SPACE-$BUILD_NUMBER'
+                    }
+                }
+            }
+        }
+
+        stage('deploy to server') {
+          steps {
+            kubernetesDeploy(configs: "tasks/service/ops/rocketmq/$KS_SPACE/deploy/**", enableConfigSubstitution: true, kubeconfigId: "$KUBECONFIG_CREDENTIAL_ID")
+          }
+        }
+
+    }
+}

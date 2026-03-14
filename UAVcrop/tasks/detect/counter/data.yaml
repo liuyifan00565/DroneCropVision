@@ -1,0 +1,6 @@
+path: /home/bdhapp/shuli_01/datasets/multi_dataset
+train: train
+val: val
+test:
+nc: 3
+names: [ 'rice', 'corn', 'soybean' ]

@@ -1,0 +1,6 @@
+ultralytics==8.3.156
+pycocotools==2.0.8
+opencv-python==4.11.0.86
+rasterio==1.4.3
+rioxarray==0.19.0
+xarray==2025.4.0

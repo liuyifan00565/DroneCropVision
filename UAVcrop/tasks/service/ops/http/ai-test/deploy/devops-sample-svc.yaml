@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubesphere.io/alias-name: $ALIAS_NAME-SVC
+  labels:
+    app: kubesphere
+    component: $APP_NAME
+  name: $APP_NAME
+  namespace: $KS_SPACE
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 31775
+      nodePort: 31775
+  selector:
+    app: kubesphere
+    component: $APP_NAME
+    tier: backend
+  sessionAffinity: None
+  type: NodePort

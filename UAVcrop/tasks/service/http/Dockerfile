@@ -1,0 +1,48 @@
+FROM harbor.host.com/public/mcvision2.0-base:latest
+
+RUN rm -rf /etc/yum.repos.d/*
+RUN curl -o /etc/yum.repos.d/CentOS-Linux-BaseOS.repo http://mirrors.aliyun.com/repo/Centos-8.repo
+RUN dnf clean all
+RUN yum -y install vim
+RUN yum install -y python39 python39-devel
+RUN mkdir ~/.pip
+RUN echo '[global]' >> ~/.pip/pip.conf
+RUN echo 'index-url = https://mirrors.aliyun.com/pypi/simple' >> ~/.pip/pip.conf
+RUN pip3 install --upgrade pip
+RUN pip3 install fastapi==0.110.0
+RUN pip3 install geojson==2.5.0
+RUN pip3 install geopandas==0.12.2
+RUN pip3 install JPype1==1.5.0
+RUN pip3 install loguru==0.7.2
+RUN pip3 install mmengine==0.10.1
+RUN pip3 install numpy==1.24.1
+RUN pip3 install opencv-python==4.7.0.68
+RUN pip3 install pandas==1.4.4
+RUN pip3 install Pillow==10.4.0
+RUN pip3 install psycopg2-binary==2.9.3
+RUN pip3 install pyrocketmq==0.3.4
+RUN pip3 install pydantic==1.10.14
+RUN pip3 install rasterio==1.3.11
+RUN pip3 install requests==2.28.2
+RUN pip3 install schedule==1.2.2
+RUN pip3 install scipy==1.10.1
+RUN pip3 install shapely==1.8.4
+RUN pip3 install rioxarray==0.13.4
+RUN pip3 install rocketmq-client-python==2.0.0
+#RUN pip3 install ultralytics
+RUN pip3 install uvicorn==0.27.1
+RUN pip3 install xarray==2023.1.0
+RUN pip3 install redis==5.2.1
+RUN pip3 install sortedcontainers==2.4.0
+RUN pip3 install imagesize
+
+COPY tasks/service/http /opt
+COPY tasks/service/http /opt/tasks/service/http
+COPY tasks/detect/seedling /opt/tasks/detect/seedling
+COPY tasks/tools /opt/tasks/tools
+#RUN cd /opt/tasks/detect/seedling && mv config_pro.py  config.py
+#RUN cd /opt && mv config_pro.ini  config.ini
+
+RUN cd /opt && chmod 755 main.py
+EXPOSE 31775
+ENTRYPOINT cd /opt && python3 main.py

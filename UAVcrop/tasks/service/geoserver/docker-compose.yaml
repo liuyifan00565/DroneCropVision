@@ -1,0 +1,14 @@
+version: '3'
+services:
+  geoserver:
+    restart: always  #指定重启策略
+    image: kartoza/geoserver:2.23.0  #镜像名称与版本
+    container_name: geoserver
+    ports:
+      - 30158:8080    #指定映射主机端口:容器端口
+    environment:
+      GEOSERVER_ADMIN_USER: bdhxx      #账号
+      GEOSERVER_ADMIN_PASSWORD: Bdhxx@2025geo    #密码
+    volumes:  #指定所挂载的主机路径
+      - ./geoserver-data:/opt/geoserver/data_dir
+      - /opt/patrolland/image/new_UAV/geoserver/data_dir:/data                       #外部数据源文件目录

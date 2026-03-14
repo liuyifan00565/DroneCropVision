@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kubesphere.io/alias-name: $ALIAS_NAME
+  labels:
+    app: kubesphere
+    component: $APP_NAME
+    tier: backend
+  name: $APP_NAME
+  namespace: $KS_SPACE
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubesphere
+      component: $APP_NAME
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: kubesphere
+        component: $APP_NAME
+        tier: backend
+    spec:
+      containers:
+        - env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: $KS_SPACE
+            - name: SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR
+              value: nacos-cluster.$KS_SPACE:8848
+            - name: SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR
+              value: nacos-cluster.$KS_SPACE:8848
+          image: $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:$KS_SPACE-$BUILD_NUMBER
+          imagePullPolicy: Always
+          name: container-$APP_NAME
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 4
+              memory: 16Gi
+            requests:
+              cpu: 0.5
+              memory: 1Gi
+          volumeMounts:
+            - name: app-logger
+              mountPath: /app/logs
+            - name: img-data
+              mountPath: /opt/image
+            - name: output-data
+              mountPath: /opt/output
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      volumes:
+        - name: app-logger
+          hostPath:
+            path: /home/$KS_SPACE
+        - name: img-data
+          nfs:
+            path: /images/image
+            server: 10.7.15.204
+        - name: output-data
+          nfs:
+            path: /images/output
+            server: 10.7.15.204
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubesphere.io/alias-name: $ALIAS_NAME-SVC
+  labels:
+    app: kubesphere
+    component: $APP_NAME
+  name: $APP_NAME
+  namespace: $KS_SPACE
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: kubesphere
+    component: $APP_NAME
+    tier: backend
+  sessionAffinity: None
+  type: ClusterIP

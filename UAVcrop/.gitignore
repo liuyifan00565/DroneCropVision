@@ -1,0 +1,20 @@
+# dataset
+datasets/
+mix_datasets/
+newdatasets/
+
+# training results
+runs/
+
+# weights
+*.pt
+
+# python
+__pycache__/
+*.pyc
+
+# vscode
+.vscode/
+
+# system
+.DS_Store

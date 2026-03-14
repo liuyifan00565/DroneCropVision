@@ -1,0 +1,9 @@
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+train: /dev/shm/jonathan/Dataset/语义分割/LabelImg/水稻育秧大棚v202406/images/train # train images (relative to 'path') 4 images
+val: /dev/shm/jonathan/Dataset/语义分割/LabelImg/水稻育秧大棚v202406/images/val # val images (relative to 'path') 4 images
+
+names:
+    0: dp
+    1: sy
+    2: zw
+    3: gd
