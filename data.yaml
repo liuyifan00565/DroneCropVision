@@ -1,8 +1,0 @@
-names:
-- soybean
-- rice
-- corn
-nc: 3
-test: mix_datasets\images\test
-train: mix_datasets\images\train
-val: mix_datasets\images\val
